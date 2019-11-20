@@ -183,8 +183,7 @@ def update(update, epochs):
 
     moving_average_reward = numpy.zeros(epochs)
     for i in range(1, epochs):
-        moving_average_reward[i] = numpy.mean(award_arr[max(i-1000, 0):i])
-    moving_average_reward[0] = -200
+        moving_average_reward[i] = numpy.mean(award_arr[max(i-1000, 0):(i+1)])
     return moving_average_reward
     # env.monitor.close()
     # gym.upload('/tmp/cartpole-experiment-1', algorithm_id='vmayoral simple Q-learning', api_key='your-key')
