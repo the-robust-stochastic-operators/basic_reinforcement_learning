@@ -89,11 +89,9 @@ def update(update, alpha, epsilon, gamma):
     env = gym.make('MountainCar-v0')
 
     max_number_of_steps = 200
-    last_time_steps = numpy.ndarray(0)
     n_bins = 10
 
     number_of_features = env.observation_space.shape[0]
-    last_time_steps = numpy.ndarray(0)
 
     # Number of states is huge so in order to simplify the situation
     # we discretize the space to: 10 ** number_of_features
@@ -182,5 +180,6 @@ if __name__ == '__main__':
 #undo plots
 #undo prints that are not to log (tracking episode reward stuff)
 #change back all parameters at top to what they should be
+
 
 
