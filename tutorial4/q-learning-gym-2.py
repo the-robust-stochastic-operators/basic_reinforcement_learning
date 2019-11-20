@@ -14,7 +14,6 @@ import sys
 
 epochs = 10000
 num_trials = 20
-game = 'MountainCar-v0'
 
 class QLearn:
     def __init__(self, actions, alpha, epsilon, gamma):
@@ -87,7 +86,7 @@ def to_bin(value, bins):
     return numpy.digitize(x=[value], bins=bins)[0]
 
 def update(update, alpha, epsilon, gamma):
-    env = gym.make(game)
+    env = gym.make('MountainCar-v0')
 
     max_number_of_steps = 200
     last_time_steps = numpy.ndarray(0)
