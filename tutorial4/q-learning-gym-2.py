@@ -182,7 +182,7 @@ def update(update, epochs):
         print("Episode {:d} reward score: {:0.2f}".format(i_episode, cumulated_reward))
 
     moving_average_reward = numpy.zeros(epochs)
-    for i in range(1, epochs):
+    for i in range(0, epochs):
         moving_average_reward[i] = numpy.mean(award_arr[max(i-1000, 0):(i+1)])
     return moving_average_reward
     # env.monitor.close()
