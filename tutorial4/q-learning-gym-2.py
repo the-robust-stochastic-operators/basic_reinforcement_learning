@@ -139,7 +139,7 @@ def update(update, alpha, epsilon, gamma):
 
     moving_average_reward = numpy.zeros(epochs)
     for i in range(0, epochs):
-        moving_average_reward[i] = numpy.mean(award_arr[max(i-1000, 0):(i+1)])
+        moving_average_reward[i] = numpy.mean(award_arr[max(i-500, 0):(i+1)])
     return moving_average_reward
 
 if __name__ == '__main__':
