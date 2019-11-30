@@ -175,6 +175,7 @@ if __name__ == '__main__':
     alpha_decay = int(sys.argv[4])
     epsilon_decay = int(sys.argv[5])
     num_trials = int(sys.argv[6])
+    print("alpha =" + str(alpha) + " epsilon =" + str(epsilon) + " gamma =" + str(gamma) + " alpha decay =" + str(alpha_decay) + " epsilon decay =" + str(epsilon_decay) + "num_trials =" + str(num_trials))
 
 
     bellman_update_arr = numpy.zeros(epochs)
@@ -202,7 +203,6 @@ if __name__ == '__main__':
     rso_update_arr = numpy.expand_dims(rso_update_arr, 1)
     rso2_update_arr = numpy.expand_dims(rso2_update_arr, 1)
 
-    print("alpha =" + str(alpha) + " epsilon =" + str(epsilon) + " gamma =" + str(gamma) + " alpha decay =" + str(alpha_decay) + " epsilon decay =" + str(epsilon_decay) + "num_trials =" + str(num_trials))
     save_file = numpy.hstack((bellman_update_arr, consistent_bellman_update_arr, rso_update_arr, rso2_update_arr))
     for a in range(save_file.shape[0]):
         print(save_file[a, :])
