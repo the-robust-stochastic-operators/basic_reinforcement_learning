@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 import sys
 
 epochs = 10000
-num_trials = 20
 
 class QLearn:
     def __init__(self, actions, alpha, epsilon, gamma):
@@ -55,6 +54,16 @@ class QLearn:
             rvalue = bellmanValue - beta*(max([self.getQ(currentState, a) for a in self.actions]) - Qvalue)
             self.q[(currentState, action)] = Qvalue + self.alpha * (rvalue - Qvalue)
 
+    def updateQRSO2(self, currentState, action, reward, nextState):
+        Qvalue = self.q.get((currentState, action), None)
+        if Qvalue is None:
+            self.q[(currentState, action)] = reward
+        else:
+            beta = 1
+            bellmanValue = reward + self.gamma*max([self.getQ(nextState, a) for a in self.actions])
+            rvalue = bellmanValue - beta*(max([self.getQ(currentState, a) for a in self.actions]) - Qvalue)
+            self.q[(currentState, action)] = Qvalue + self.alpha * (rvalue - Qvalue)
+
     def chooseAction(self, state, return_q=False):
         q = [self.getQ(state, a) for a in self.actions]
         maxQ = max(q)
@@ -85,9 +94,14 @@ def build_state(features):
 def to_bin(value, bins):
     return numpy.digitize(x=[value], bins=bins)[0]
 
-def update(update, alpha, epsilon, gamma):
+def update(update):
     env = gym.make('MountainCar-v0')
 
+    global alpha 
+    global epsilon
+    global gamma
+    global alpha_decay
+    global epsilon_decay
     max_number_of_steps = 200
     n_bins = 40
 
@@ -111,7 +125,11 @@ def update(update, alpha, epsilon, gamma):
         state = build_state([to_bin(feature1, feature1_bins),
                          to_bin(feature2, feature2_bins)])
 
-        qlearn.epsilon = qlearn.epsilon * 0.999 # added epsilon decay
+        if alpha_decay:
+            alpha = alpha * 0.999
+        if epsilon_decay:
+            epsilon = epsilon * 0.999
+
         cumulated_reward = 0
 
         for t in range(max_number_of_steps):            
@@ -127,8 +145,10 @@ def update(update, alpha, epsilon, gamma):
                 qlearn.updateQBellman(state, action, reward, nextState)
             elif (update == 1):
                 qlearn.updateQConsistent(state, action, reward, nextState)
-            else:
+            elif (update == 2):
                 qlearn.updateQRSO(state, action, reward, nextState)
+            else:
+                qlearn.updateQRSO2(state, action, reward, nextState)
 
             state = nextState
             cumulated_reward += reward
@@ -143,31 +163,47 @@ def update(update, alpha, epsilon, gamma):
     return moving_average_reward
 
 if __name__ == '__main__':
+    global alpha
+    global epsilon 
+    global gamma 
+    global alpha_decay
+    global epsilon_decay 
+    global num_trials
     alpha = float(sys.argv[1])
     epsilon = float(sys.argv[2])
     gamma = float(sys.argv[3])
+    alpha_decay = int(sys.argv[4])
+    epsilon_decay = int(sys.argv[5])
+    num_trials = int(sys.argv[6])
+
 
     bellman_update_arr = numpy.zeros(epochs)
     for i in range(num_trials):
-        bellman_update_arr = bellman_update_arr + update(0, alpha, epsilon, gamma)
+        bellman_update_arr = bellman_update_arr + update(0)
     bellman_update_arr = bellman_update_arr / float(num_trials)
 
     consistent_bellman_update_arr = numpy.zeros(epochs)
     for i in range(num_trials):
-        consistent_bellman_update_arr = consistent_bellman_update_arr + update(1, alpha, epsilon, gamma)
+        consistent_bellman_update_arr = consistent_bellman_update_arr + update(1)
     consistent_bellman_update_arr = consistent_bellman_update_arr / float(num_trials)
 
     rso_update_arr = numpy.zeros(epochs)
     for i in range(num_trials):
-        rso_update_arr = rso_update_arr + update(2, alpha, epsilon, gamma)
+        rso_update_arr = rso_update_arr + update(2)
     rso_update_arr = rso_update_arr / float(num_trials)
+
+    rso2_update_arr = numpy.zeros(epochs)
+    for i in range(num_trials):
+        rso2_update_arr = rso2_update_arr + update(3)
+    rso2_update_arr = rso2_update_arr / float(num_trials)
 
     bellman_update_arr = numpy.expand_dims(bellman_update_arr, 1)
     consistent_bellman_update_arr = numpy.expand_dims(consistent_bellman_update_arr, 1)
     rso_update_arr = numpy.expand_dims(rso_update_arr, 1)
+    rso2_update_arr = numpy.expand_dims(rso2_update_arr, 1)
 
-    save_file = numpy.hstack((bellman_update_arr, consistent_bellman_update_arr, rso_update_arr))
-    print("alpha =" + str(alpha) + " epsilon =" + str(epsilon) + " gamma =" + str(gamma))
+    print("alpha =" + str(alpha) + " epsilon =" + str(epsilon) + " gamma =" + str(gamma) + " alpha decay =" + str(alpha_decay) + " epsilon decay =" + str(epsilon_decay) + "num_trials =" + str(num_trials))
+    save_file = numpy.hstack((bellman_update_arr, consistent_bellman_update_arr, rso_update_arr, rso2_update_arr))
     for a in range(save_file.shape[0]):
         print(save_file[a, :])
     #save_file_name = "alpha=" + str(alpha) + " epsilon=" + str(epsilon) + " gamma=" + str(gamma)
@@ -181,6 +217,5 @@ if __name__ == '__main__':
 #undo plots
 #undo prints that are not to log (tracking episode reward stuff)
 #change back all parameters at top to what they should be
-
 
 
