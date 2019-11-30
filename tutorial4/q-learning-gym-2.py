@@ -89,7 +89,7 @@ def update(update, alpha, epsilon, gamma):
     env = gym.make('MountainCar-v0')
 
     max_number_of_steps = 200
-    n_bins = 10
+    n_bins = 40
 
     number_of_features = env.observation_space.shape[0]
 
