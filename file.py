@@ -117,13 +117,13 @@ def update():
     feature1_bins = pandas.cut([-1.2, 0.6], bins=n_bins, retbins=True)[1][1:-1]
     feature2_bins = pandas.cut([-0.07, 0.07], bins=n_bins, retbins=True)[1][1:-1]
 
-    # The Q-learn algorithm
-    qlearn = QLearn(range(env.action_space.n), alpha, epsilon, gamma)
     # alpha = 0.005, gamma = 0.90, epsilon = 0.1
 
     last_time = time.time()
     total_reward = 0
     for j in range(num_trials):
+        # The Q-learn algorithm
+        qlearn = QLearn(range(env.action_space.n), alpha, epsilon, gamma)
         for i_episode in range(epochs):
             observation = env.reset()
 
