@@ -134,7 +134,7 @@ def update():
             if alpha_decay:
                 alpha = alpha * 0.999
             if epsilon_decay:
-                epsilon = epsilon * 0.999
+                qlearn.epsilon = qlearn.epsilon * 0.999
 
 
             for t in range(max_number_of_steps):            
@@ -161,6 +161,7 @@ def update():
 
         cumulated_reward = 0
 
+        qlearn.epsilon=0
         for i_episode in range(1000):
             observation = env.reset()
 
